@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define NUM_THREADS 2
+#define NUM_THREADS 10
 pthread_t tid[NUM_THREADS];
 
 void *do_something(void *arg)
@@ -47,7 +47,7 @@ main(int argc, char *argv[])
     //req.tv_sec = (time_t)0;
     //req.tv_nsec = 1000000l; /* 1 ms */
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < NUM_THREADS; i++) {
         printf("DEBUG: hello-thread: creating thread tid[%d]\n", i);
         err = pthread_create(&(tid[i]), NULL, &do_something, NULL);
         if (err != 0) {
