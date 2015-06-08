@@ -4,26 +4,69 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <pthread.h>
+#include <stdlib.h>
+#include <string.h>
 
-main(int argc, char *argv[])
+#define NUM_THREADS 2
+pthread_t tid[NUM_THREADS];
+
+void *do_something(void *arg)
 {
     int count = 0;
     struct timespec req;
     struct timespec rem;
 
-    printf("DEBUG: hello-thread start\n");
+    printf("DEBUG: BEGIN do_something(arg=%p)\n", arg);
 
     req.tv_sec = (time_t)0;
     req.tv_nsec = 1000000l; /* 1 ms */
 
     while (1) {
-        printf("main: count=%d\n", count);
-        //sleep(10);
+        //printf("DEBUG: do_something: count=%d\n", count);
+        printf(".");
+        //sleep(1);
         nanosleep(&req, &rem);
         count++;
     }
+    printf("DEBUG: END do_something\n");
+    return NULL;
+}
 
-    printf("DEBUG: hello-thread stop\n");
+main(int argc, char *argv[])
+{
+    int i;
+    int err;
+    int count = 0;
+    //struct timespec req;
+    //struct timespec rem;
+    //pthread_attr_t attr;
+
+    printf("DEBUG: BEGIN hello-thread: main(argc=%d, argv=%p)\n", argc, argv);
+
+    //req.tv_sec = (time_t)0;
+    //req.tv_nsec = 1000000l; /* 1 ms */
+
+    for (i = 0; i < 2; i++) {
+        printf("DEBUG: hello-thread: creating thread tid[%d]\n", i);
+        err = pthread_create(&(tid[i]), NULL, &do_something, NULL);
+        if (err != 0) {
+            printf("\n Can't create thread: [%s]", strerror(err));
+        } else {
+            printf("\n Thread created successfully\n");
+        }
+    }
+
+    printf("DEBUG: hello-thread: start loop\n");
+    while (1) {
+        printf("DEBUG: hello-thread: count=%d\n", count);
+        sleep(1);
+        //nanosleep(&req, &rem);
+        count++;
+    }
+    printf("DEBUG: hello-thread: end loop\n");
+
+    printf("DEBUG: hello-thread end\n");
     return 0;
 }
 
