@@ -7,10 +7,15 @@ help:
 hello-thread:	src/main.c
 	$(CC) -o $@ $<
 
-build-target:	src/main.c
-	$(CROSS_COMPILE)$(CC) $(CFLAGS) -o hello-thread-$(ARCH) $<
-
 build-native:	hello-thread
+
+sanity-checks:
+	@if [ "$(ARCH)" = "" ]; then echo "Please define ARCH"; exit 1; fi
+	@if [ "$(CROSS_COMPILE)" = "" ]; then echo "Please define CROSS_COMPILE"; exit 1; fi
+
+build-target:	src/main.c
+	$(MAKE) sanity-checks
+	$(CROSS_COMPILE)$(CC) $(CFLAGS) -o hello-thread-$(ARCH) $<
 
 build-target-arm:
 	$(MAKE) ARCH=arm CC=gcc CFLAGS="-static" CROSS_COMPILE=arm-none-linux-gnueabi- build-target
