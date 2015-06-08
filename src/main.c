@@ -18,6 +18,7 @@ void *do_something(void *arg)
     struct timespec rem;
 
     printf("DEBUG: BEGIN do_something(arg=%p)\n", arg);
+    printf("DEBUG: do_something: pthread_self=%ld\n", pthread_self());
 
     req.tv_sec = (time_t)0;
     req.tv_nsec = 1000000l; /* 1 ms */
@@ -33,7 +34,22 @@ void *do_something(void *arg)
     return NULL;
 }
 
-main(int argc, char *argv[])
+/* This function will eat CPU */
+void *do_eat_cpu(void *arg)
+{
+    printf("DEBUG: BEGIN do_eat_cpu(arg=%p)\n", arg);
+    printf("DEBUG: do_eat_cpu: pthread_self=%ld\n", pthread_self());
+
+    while (1) {
+        /* Do nothing, apart from eating CPU... */
+    }
+
+    printf("DEBUG: END do_eat_cpu\n");
+    return NULL;
+}
+
+
+int main(int argc, char *argv[])
 {
     int i;
     int err;
@@ -49,7 +65,13 @@ main(int argc, char *argv[])
 
     for (i = 0; i < NUM_THREADS; i++) {
         printf("DEBUG: hello-thread: creating thread tid[%d]\n", i);
-        err = pthread_create(&(tid[i]), NULL, &do_something, NULL);
+        switch (i) {
+          case 0:
+            err = pthread_create(&(tid[i]), NULL, &do_eat_cpu, NULL);
+            break;
+          default:
+            err = pthread_create(&(tid[i]), NULL, &do_something, NULL);
+        }
         if (err != 0) {
             printf("\n Can't create thread: [%s]", strerror(err));
         } else {
