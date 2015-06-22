@@ -1,13 +1,17 @@
-#all:	help
-all:	build-native build-target-arm
+all:	help
 
 help:
 	@echo Please read Makefile
 
+build-native:	hello-thread
+
+build-target-arm:
+	$(MAKE) ARCH=arm CROSS_COMPILE="arm-none-linux-gnueabi-" CC="gcc" CFLAGS="-static" LDFLAGS="-pthread" build-target
+
+# -----------------------------------------------------------
+
 hello-thread:	src/main.c
 	$(CC) -o $@ -pthread $<
-
-build-native:	hello-thread
 
 sanity-checks:
 	@if [ "$(ARCH)" = "" ]; then echo "Please define ARCH"; exit 1; fi
@@ -16,9 +20,6 @@ sanity-checks:
 build-target:	src/main.c
 	$(MAKE) sanity-checks
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -o hello-thread-$(ARCH) $(LDFLAGS) $<
-
-build-target-arm:
-	$(MAKE) ARCH=arm CROSS_COMPILE="arm-none-linux-gnueabi-" CC="gcc" CFLAGS="-static" LDFLAGS="-pthread" build-target
 
 clean:
 	rm -f hello-thread hello-thread-arm
