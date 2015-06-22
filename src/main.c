@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define NUM_THREADS 10
 pthread_t tid[NUM_THREADS];
