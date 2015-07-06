@@ -11,6 +11,11 @@ build-target-arm:
 build-target-arm-debug:
 	$(MAKE) ARCH=arm CROSS_COMPILE="arm-none-linux-gnueabi-" CC="gcc" CFLAGS="-g -static" LDFLAGS="-pthread" hello-thread-arm-debug
 
+clean:
+	rm -f hello-thread hello-thread-arm hello-thread-arm-debug
+
+# -----------------------------------------------------------
+# The following targets are internal and not supposed to be called by commandline
 # -----------------------------------------------------------
 
 hello-thread:	src/main.c
@@ -27,8 +32,5 @@ build-target:	src/main.c
 hello-thread-arm-debug: src/main.c
 	$(MAKE) sanity-checks
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(LDFLAGS) $<
-
-clean:
-	rm -f hello-thread hello-thread-arm hello-thread-arm-debug
 
 # EOF
